@@ -1,9 +1,11 @@
+import { useReducer } from 'react';
 import './App.css'
 import { Form } from './components';
+import { activityReducer, initialState } from './reducers/activity-reducer';
 
 function App() {
 
-
+    const [state, dispath] = useReducer(activityReducer, initialState);
 
     return (
         <>  
@@ -15,7 +17,7 @@ function App() {
 
 
             <section className='bg-lime-500 gap-30 py-10 px-20'>
-                <Form/>
+                <Form dispath={dispath}/>
             </section>    
 
 
