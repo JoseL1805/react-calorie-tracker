@@ -1,20 +1,31 @@
-import {  useState, ChangeEvent, FormEvent, Dispatch,  } from 'react';
+import {  useState, ChangeEvent, FormEvent, Dispatch, useEffect  } from 'react';
 import { categories } from '../data/categories';
 import { Activity as ActivityType, Activity } from '../types/index';
-import { ActivityActions } from '../reducers/activity-reducer';
+import { ActivityActions, ActivityState } from '../reducers/activity-reducer';
 
 type FormpProps = {
-    dispath: Dispatch<ActivityActions>
+    dispath: Dispatch<ActivityActions>,
+    state: ActivityState
 }
 
-export const Form = ({dispath} : FormpProps) => {
+const initialState : Activity = {
+    id: crypto.randomUUID(),
+    category: 1,
+    calories: 0,
+    name: ''
+}
 
 
-    const [activity, setActivity] = useState<ActivityType>({
-        category: 1,
-        calories: 0,
-        name: ''
-    })
+export const Form = ({dispath, state} : FormpProps) => {
+
+    const [activity, setActivity] = useState<ActivityType>(initialState)
+
+    useEffect( ()=>{
+        if(state.activeId){
+            const selectedActivity = state.activities.filter( stateActivity => stateActivity.id === state.activeId)[0];
+            setActivity(selectedActivity)
+        }
+    },[state.activeId])
 
     const handleChance = (e : ChangeEvent<HTMLSelectElement>  | ChangeEvent<HTMLInputElement>) => {
         // const isNumberField =  ['category', 'calories'].includes(e.target.value);
@@ -34,14 +45,14 @@ export const Form = ({dispath} : FormpProps) => {
     const handleSubmit = ( e : FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         dispath({ type: 'save-activity', payload: {newActivity : activity}})
-        console.log("formulario enviado")
+        setActivity({...initialState, id: crypto.randomUUID()})
     }
 
 
     return (
         <>
             <form 
-                className="space-y-5 bg-white shadow p-10 rounded-lg"
+                className="mx-auto max-w-3xl space-y-5 bg-white shadow p-10 rounded-lg"
                 onSubmit={ handleSubmit }
                 >
                 <div className="grid grid-cols-1 gap-3">
